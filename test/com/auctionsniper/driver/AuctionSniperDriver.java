@@ -1,6 +1,5 @@
 package com.auctionsniper.driver;
 
-import com.auctionsniper.Main;
 import com.auctionsniper.ui.MainWindow;
 import com.objogate.wl.swing.AWTEventQueueProber;
 import com.objogate.wl.swing.driver.JFrameDriver;
@@ -26,9 +25,5 @@ public class AuctionSniperDriver extends JFrameDriver {
 
     public void showsSniperStatus(String statusText) {
         new JLabelDriver(this, named(MainWindow.SNIPER_STATUS_NAME)).hasText(equalTo(statusText));
-    }
-
-    public void dispose() {
-
     }
 }

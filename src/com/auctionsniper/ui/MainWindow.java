@@ -1,5 +1,7 @@
 package com.auctionsniper.ui;
 
+import com.auctionsniper.sniper.SniperStatus;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -15,14 +17,14 @@ public class MainWindow extends JFrame {
     public static final String MAIN_WINDOW_NAME = "Auction Sniper";
 
     public static final String SNIPER_STATUS_NAME = "status";
-    private final JLabel sniperStatus = createLabel(Status.JOINING.toString());
+    private final JLabel sniperStatus = createLabel(SniperStatus.JOINING.toString());
 
     public MainWindow(){
         super(MAIN_WINDOW_TITLE);
         setName(MAIN_WINDOW_NAME);
         add(sniperStatus);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pack();
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
     }
 

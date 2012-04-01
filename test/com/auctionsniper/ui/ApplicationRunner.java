@@ -3,6 +3,7 @@ package com.auctionsniper.ui;
 import com.auctionsniper.Main;
 import com.auctionsniper.driver.AuctionSniperDriver;
 import com.auctionsniper.server.FakeAuctionServer;
+import com.auctionsniper.sniper.SniperStatus;
 
 /**
  * User: lmirabal
@@ -14,11 +15,11 @@ public class ApplicationRunner {
     public static final String SNIPER_ID = "sniper";
     public static final String SNIPER_PASSWORD = "sniper";
 
-    private static final String XMPP_HOSTNAME = "localhost";
-    private static final String STATUS_JOINING = "JOINING";
-    private static final String STATUS_LOST = "LOST";
+    public static final String XMPP_HOSTNAME = "localhost";
+//    public static final String XMPP_HOSTNAME = "lmirabal-lnx";
 
     private AuctionSniperDriver driver;
+    public static final String SNIPER_XMPP_ID = SNIPER_ID + "@lmirabal-lnx/Auction";
 
     public void startBiddingIn(final FakeAuctionServer auction) {
         Thread thread = new Thread("Test Application"){
@@ -35,17 +36,28 @@ public class ApplicationRunner {
         thread.start();
 
         driver = new AuctionSniperDriver(1000);
-        driver.showsSniperStatus(STATUS_JOINING);
+        driver.showsSniperStatus(SniperStatus.JOINING.toString());
+    }
+
+    public void hasShownSniperIsBidding() {
+        driver.showsSniperStatus(SniperStatus.BIDDING.toString());
+    }
+
+    public void hasShownSniperIsWinning() {
+        driver.showsSniperStatus(SniperStatus.WINNING.toString());
     }
 
     public void showsSniperHasLostAuction() {
-        driver.showsSniperStatus(STATUS_LOST);
+        driver.showsSniperStatus(SniperStatus.LOST.toString());
     }
 
-    public void close() {
+    public void showsSniperHasWonAuction() {
+        driver.showsSniperStatus(SniperStatus.WON.toString());
+    }
+
+    public void stop() {
         if(driver != null){
             driver.dispose();
         }
     }
-
 }
