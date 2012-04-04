@@ -14,6 +14,8 @@ import static com.auctionsniper.auction.AuctionEventListener.PriceSource.FromSni
  * User: lmirabal
  * Date: 3/28/12
  * Time: 10:05 PM
+ * <p/>
+ * Parse event messages from the chat and notifies such events
  */
 public class AuctionMessageTranslator implements MessageListener {
 
@@ -29,9 +31,9 @@ public class AuctionMessageTranslator implements MessageListener {
     public void processMessage(Chat chat, Message message) {
         AuctionEvent event = AuctionEvent.from(message.getBody());
 
-        if(event.isCloseType()){
+        if (event.isCloseType()) {
             listener.auctionClosed();
-        }else if (event.isPriceType()){
+        } else if (event.isPriceType()) {
             listener.currentPrice(event.price(), event.increment(), event.isFrom(sniperId));
         }
     }
@@ -40,8 +42,7 @@ public class AuctionMessageTranslator implements MessageListener {
         private final HashMap<String, String> fields = new HashMap<String, String>();
 
         public static AuctionEvent from(String messageBody) {
-            AuctionEvent event = new AuctionEvent(messageBody);
-            return event;
+            return new AuctionEvent(messageBody);
         }
 
         private AuctionEvent(String messageBody) {
@@ -49,7 +50,7 @@ public class AuctionMessageTranslator implements MessageListener {
         }
 
         private void parse(String messageBody) {
-            for(String element : fieldsIn(messageBody)){
+            for (String element : fieldsIn(messageBody)) {
                 addField(element);
             }
         }
@@ -79,7 +80,7 @@ public class AuctionMessageTranslator implements MessageListener {
             return isType("PRICE");
         }
 
-        private boolean isType(String type){
+        private boolean isType(String type) {
             return type.equals(type());
         }
 

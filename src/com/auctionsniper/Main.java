@@ -4,9 +4,9 @@ import com.auctionsniper.auction.Auction;
 import com.auctionsniper.auction.XMPPAuction;
 import com.auctionsniper.message.AuctionMessageTranslator;
 import com.auctionsniper.sniper.AuctionSniper;
-import com.auctionsniper.sniper.SniperListener;
-import com.auctionsniper.sniper.SniperStatus;
 import com.auctionsniper.ui.MainWindow;
+import com.auctionsniper.ui.SnipersTableModel;
+import com.auctionsniper.ui.SwingThreadSniperListener;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -20,7 +20,7 @@ import java.awt.event.WindowEvent;
  * Date: 3/19/12
  * Time: 9:12 PM
  */
-public class Main{
+public class Main {
 
     public static final String JOIN_COMMAND_FORMAT = "SOL Version: 1.1; Command: JOIN;";
     public static final String BID_COMMAND_FORMAT = "SOL Version: 1.1; Command: BID; Price: %d;";
@@ -34,6 +34,7 @@ public class Main{
     private static final String ITEM_ID_AS_LOGIN = "auction-%s";
     private static final String AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + "@%s/" + AUCTION_RESOURCE; //auction-item54321@lmirabal-lnx/Auction
 
+    private final SnipersTableModel snipers = new SnipersTableModel();
     private MainWindow ui;
     private Chat notToBeGCd;
 
@@ -45,7 +46,7 @@ public class Main{
         SwingUtilities.invokeAndWait(new Runnable() {
             @Override
             public void run() {
-                ui = new MainWindow();
+                ui = new MainWindow(snipers);
             }
         });
     }
@@ -57,7 +58,7 @@ public class Main{
         final String itemId = args[ARG_ITEM_ID];
         main(hostname, username, password, itemId);
     }
-    
+
     public static void main(String hostname, String username, String password, String itemId) throws Exception {
         Main main = new Main();
 
@@ -79,7 +80,8 @@ public class Main{
         notToBeGCd = chat;
 
         Auction auction = new XMPPAuction(chat);
-        chat.addMessageListener(new AuctionMessageTranslator(connection.getUser(), new AuctionSniper(auction, new SniperStateDisplayer())));
+        chat.addMessageListener(new AuctionMessageTranslator(connection.getUser(),
+                new AuctionSniper(itemId, auction, new SwingThreadSniperListener(snipers))));
         auction.join();
     }
 
@@ -96,36 +98,4 @@ public class Main{
         return String.format(AUCTION_ID_FORMAT, itemId, connection.getServiceName());
     }
 
-    public class SniperStateDisplayer implements SniperListener{
-
-
-        @Override
-        public void sniperBidding() {
-            showStatus(SniperStatus.BIDDING.toString());
-        }
-
-        @Override
-        public void sniperLost() {
-            showStatus(SniperStatus.LOST.toString());
-        }
-
-        @Override
-        public void sniperWinning() {
-            showStatus(SniperStatus.WINNING.toString());
-        }
-
-        @Override
-        public void sniperWon() {
-            showStatus(SniperStatus.WON.toString());
-        }
-
-        private void showStatus(final String status){
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    ui.showStatus(status);
-                }
-            });
-        }
-    }
 }

@@ -5,10 +5,12 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPException;
 
 /**
-* User: lmirabal
-* Date: 3/31/12
-* Time: 5:54 PM
-*/
+ * User: lmirabal
+ * Date: 3/31/12
+ * Time: 5:54 PM
+ * <p/>
+ * Send sniper commands to the auction
+ */
 public class XMPPAuction implements Auction {
     private final Chat chat;
 
