@@ -1,7 +1,10 @@
 package com.auctionsniper.endtoend;
 
 import com.auctionsniper.Main;
+import com.auctionsniper.sniper.SniperState;
 import com.auctionsniper.ui.MainWindow;
+
+import static com.auctionsniper.ui.SnipersTableModel.textFor;
 
 /**
  * User: lmirabal
@@ -18,15 +21,26 @@ public class ApplicationRunner {
 
     private AuctionSniperDriver driver;
     public static final String SNIPER_XMPP_ID = SNIPER_ID + "@lmirabal-lnx/Auction";
-    private String itemId;
 
-    public void startBiddingIn(final FakeAuctionServer auction) {
-        itemId = auction.getItemId();
+    public void startBiddingIn(final FakeAuctionServer... auctions) {
+        startSniper();
+
+        driver = new AuctionSniperDriver(1000);
+        driver.hasTitle(MainWindow.MAIN_WINDOW_TITLE);
+        driver.hasColumnTitles();
+        for (FakeAuctionServer auction : auctions) {
+            final String itemId = auction.getItemId();
+            driver.startBiddingFor(itemId);
+            driver.showsSniperStatus(itemId, 0, 0, textFor(SniperState.JOINING));
+        }
+    }
+
+    private void startSniper() {
         Thread thread = new Thread("Test Application") {
             @Override
             public void run() {
                 try {
-                    Main.main(XMPP_HOSTNAME, SNIPER_ID, SNIPER_PASSWORD, auction.getItemId());
+                    Main.main(arguments());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -34,27 +48,30 @@ public class ApplicationRunner {
         };
         thread.setDaemon(true);
         thread.start();
-
-        driver = new AuctionSniperDriver(1000);
-        driver.hasTitle(MainWindow.MAIN_WINDOW_TITLE);
-        driver.hasColumnTitles();
-        driver.showsSniperStatus(MainWindow.STATUS_JOINING);
     }
 
-    public void hasShownSniperIsBidding(int lastPrice, int lastBid) {
-        driver.showsSniperStatus(itemId, lastPrice, lastBid, MainWindow.STATUS_BIDDING);
+    private String[] arguments() {
+        String[] arguments = new String[3];
+        arguments[0] = XMPP_HOSTNAME;
+        arguments[1] = SNIPER_ID;
+        arguments[2] = SNIPER_PASSWORD;
+        return arguments;
     }
 
-    public void hasShownSniperIsWinning(int winningBid) {
-        driver.showsSniperStatus(itemId, winningBid, winningBid, MainWindow.STATUS_WINNING);
+    public void hasShownSniperIsBidding(FakeAuctionServer auction, int lastPrice, int lastBid) {
+        driver.showsSniperStatus(auction.getItemId(), lastPrice, lastBid, textFor(SniperState.BIDDING));
     }
 
-    public void showsSniperHasLostAuction() {
-        driver.showsSniperStatus(MainWindow.STATUS_LOST);
+    public void hasShownSniperIsWinning(FakeAuctionServer auction, int winningBid) {
+        driver.showsSniperStatus(auction.getItemId(), winningBid, winningBid, textFor(SniperState.WINNING));
     }
 
-    public void showsSniperHasWonAuction(int lastPrice) {
-        driver.showsSniperStatus(MainWindow.STATUS_WON);
+    public void showsSniperHasLostAuction(FakeAuctionServer auction, int winningPrice, int lastBid) {
+        driver.showsSniperStatus(auction.getItemId(), winningPrice, lastBid, textFor(SniperState.LOST));
+    }
+
+    public void showsSniperHasWonAuction(FakeAuctionServer auction, int lastPrice) {
+        driver.showsSniperStatus(auction.getItemId(), lastPrice, lastPrice, textFor(SniperState.WON));
     }
 
     public void stop() {

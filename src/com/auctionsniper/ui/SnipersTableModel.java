@@ -3,8 +3,11 @@ package com.auctionsniper.ui;
 import com.auctionsniper.sniper.SniperListener;
 import com.auctionsniper.sniper.SniperSnapshot;
 import com.auctionsniper.sniper.SniperState;
+import com.objogate.exception.Defect;
 
 import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: lmirabal
@@ -15,9 +18,7 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
     private static final String[] STATE_TEXT = {MainWindow.STATUS_JOINING, MainWindow.STATUS_BIDDING,
             MainWindow.STATUS_WINNING, MainWindow.STATUS_LOST, MainWindow.STATUS_WON};
 
-    private static final SniperSnapshot STARTING_UP = new SniperSnapshot("", 0, 0, SniperState.JOINING);
-
-    private SniperSnapshot snapshot = STARTING_UP;
+    private final List<SniperSnapshot> snapshots = new ArrayList<SniperSnapshot>();
 
     @Override
     public String getColumnName(int column) {
@@ -26,7 +27,7 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
 
     @Override
     public int getRowCount() {
-        return 1;
+        return snapshots.size();
     }
 
     @Override
@@ -34,20 +35,37 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
         return Column.values().length;
     }
 
+    public Object getValueAt(int row, Column column) {
+        return getValueAt(row, column.ordinal());
+    }
+
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        return Column.at(columnIndex).valueIn(snapshot);
+        return Column.at(columnIndex).valueIn(snapshots.get(rowIndex));
     }
 
     @Override
-    public void sniperStateChanged(SniperSnapshot newSnapshot) {
-        this.snapshot = newSnapshot;
-        fireTableRowsUpdated(0, 0);
+    public void sniperStateChanged(SniperSnapshot snapshot) {
+        for (int i = 0; i < snapshots.size(); i++) {
+            if (snapshots.get(i).isForSameItemAs(snapshot)) {
+                snapshots.set(i, snapshot);
+                fireTableRowsUpdated(i, i);
+                return;
+            }
+        }
+        throw new Defect("No existing sniper snapshot for " + snapshot.itemId);
     }
 
-    private static String textFor(SniperState state) {
+    public static String textFor(SniperState state) {
         return STATE_TEXT[state.ordinal()];
     }
+
+    public void addSniper(SniperSnapshot snapshot) {
+        final int rowIndex = getRowCount();
+        snapshots.add(snapshot);
+        fireTableRowsInserted(rowIndex, rowIndex);
+    }
+
 
     public enum Column {
         ITEM_IDENTIFIER("Item") {
