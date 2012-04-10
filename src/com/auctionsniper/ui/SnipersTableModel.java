@@ -1,8 +1,6 @@
 package com.auctionsniper.ui;
 
-import com.auctionsniper.sniper.SniperListener;
-import com.auctionsniper.sniper.SniperSnapshot;
-import com.auctionsniper.sniper.SniperState;
+import com.auctionsniper.sniper.*;
 import com.objogate.exception.Defect;
 
 import javax.swing.table.AbstractTableModel;
@@ -14,7 +12,7 @@ import java.util.List;
  * Date: 4/1/12
  * Time: 9:11 PM
  */
-public class SnipersTableModel extends AbstractTableModel implements SniperListener {
+public class SnipersTableModel extends AbstractTableModel implements SniperListener, PortfolioListener {
     private static final String[] STATE_TEXT = {MainWindow.STATUS_JOINING, MainWindow.STATUS_BIDDING,
             MainWindow.STATUS_WINNING, MainWindow.STATUS_LOST, MainWindow.STATUS_WON};
 
@@ -47,23 +45,34 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
     @Override
     public void sniperStateChanged(SniperSnapshot snapshot) {
         for (int i = 0; i < snapshots.size(); i++) {
-            if (snapshots.get(i).isForSameItemAs(snapshot)) {
-                snapshots.set(i, snapshot);
-                fireTableRowsUpdated(i, i);
-                return;
-            }
+            if (updateSniperRow(snapshot, i)) return;
         }
         throw new Defect("No existing sniper snapshot for " + snapshot.itemId);
     }
 
-    public static String textFor(SniperState state) {
-        return STATE_TEXT[state.ordinal()];
+    private boolean updateSniperRow(SniperSnapshot snapshot, int row) {
+        if (snapshots.get(row).isForSameItemAs(snapshot)) {
+            snapshots.set(row, snapshot);
+            fireTableRowsUpdated(row, row);
+            return true;
+        }
+        return false;
     }
 
-    public void addSniper(SniperSnapshot snapshot) {
+    @Override
+    public void sniperAdded(AuctionSniper sniper) {
+        addSniperSnapshot(sniper.getSnapshot());
+        sniper.addSniperListener(new SwingThreadSniperListener(this));
+    }
+
+    private void addSniperSnapshot(SniperSnapshot snapshot) {
         final int rowIndex = getRowCount();
         snapshots.add(snapshot);
         fireTableRowsInserted(rowIndex, rowIndex);
+    }
+
+    public static String textFor(SniperState state) {
+        return STATE_TEXT[state.ordinal()];
     }
 
 

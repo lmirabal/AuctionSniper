@@ -1,6 +1,6 @@
 package com.auctionsniper.endtoend;
 
-import com.auctionsniper.Main;
+import com.auctionsniper.xmpp.XMPPAuction;
 import org.hamcrest.Matcher;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
@@ -54,11 +54,11 @@ public class FakeAuctionServer {
     }
 
     public void hasReceivedJoinRequestFromSniper(String sniperId) throws InterruptedException {
-        receivesAMessageMatching(sniperId, equalTo(Main.JOIN_COMMAND_FORMAT));
+        receivesAMessageMatching(sniperId, equalTo(XMPPAuction.JOIN_COMMAND_FORMAT));
     }
 
     public void hasReceivedBid(int price, String sniperId) throws InterruptedException {
-        receivesAMessageMatching(sniperId, equalTo(String.format(Main.BID_COMMAND_FORMAT, price)));
+        receivesAMessageMatching(sniperId, equalTo(String.format(XMPPAuction.BID_COMMAND_FORMAT, price)));
     }
 
     private void receivesAMessageMatching(String sniperId, Matcher<? super String> messageMatcher) throws InterruptedException {

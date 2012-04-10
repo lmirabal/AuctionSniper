@@ -9,6 +9,7 @@ import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.jmock.*;
 import org.jmock.integration.junit4.*;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -29,8 +30,13 @@ public class AuctionSniperTest {
     private final Mockery context = new Mockery();
     private final Auction auction = context.mock(Auction.class);
     private final SniperListener sniperListener = context.mock(SniperListener.class);
-    private final AuctionSniper sniper = new AuctionSniper(ITEM_ID, auction, sniperListener);
+    private final AuctionSniper sniper = new AuctionSniper(ITEM_ID, auction);
     private final States sniperState = context.states("sniper");
+
+    @Before
+    public void addSniperListener() throws Exception {
+        sniper.addSniperListener(sniperListener);
+    }
 
     @Test //Joining -> Lost
     public void reportsLostWhenAuctionClosesImmediately() throws Exception {

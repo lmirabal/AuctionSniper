@@ -7,5 +7,8 @@ package com.auctionsniper.auction;
  */
 public interface Auction {
     void join();
+
     void bid(int price);
+
+    void addAuctionEventListeners(AuctionEventListener auctionEventListener);
 }

@@ -1,5 +1,6 @@
 package com.auctionsniper.ui;
 
+import com.auctionsniper.sniper.SniperPortfolio;
 import com.auctionsniper.util.Announcer;
 
 import javax.swing.*;
@@ -29,10 +30,10 @@ public class MainWindow extends JFrame {
 
     private final Announcer<UserRequestListener> userRequests = Announcer.to(UserRequestListener.class);
 
-    public MainWindow(SnipersTableModel snipers) {
+    public MainWindow(SniperPortfolio portfolio) {
         super(MAIN_WINDOW_TITLE);
         setName(MAIN_WINDOW_NAME);
-        setContentPane(makeSnipersTable(snipers), makeControls());
+        setContentPane(makeSnipersTable(portfolio), makeControls());
         pack();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
@@ -66,8 +67,10 @@ public class MainWindow extends JFrame {
         contentPane.add(new JScrollPane(snipersTable), BorderLayout.CENTER);
     }
 
-    private JTable makeSnipersTable(SnipersTableModel snipers) {
-        final JTable snipersTable = new JTable(snipers);
+    private JTable makeSnipersTable(SniperPortfolio portfolio) {
+        SnipersTableModel model = new SnipersTableModel();
+        portfolio.addPortfolioListener(model);
+        final JTable snipersTable = new JTable(model);
         snipersTable.setName(SNIPERS_TABLE_NAME);
         return snipersTable;
     }

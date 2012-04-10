@@ -10,14 +10,14 @@ import javax.swing.*;
  * Date: 4/4/12
  * Time: 10:14 PM
  */ /*
- * Decorator for SniperListener which fires table model updates in the event thread
+ * Decorator for SniperListener which calls the listener updates in the event thread
  */
 public class SwingThreadSniperListener implements SniperListener {
 
-    private final SnipersTableModel snipers;
+    private final SniperListener sniperListener;
 
-    public SwingThreadSniperListener(SnipersTableModel snipers) {
-        this.snipers = snipers;
+    public SwingThreadSniperListener(SniperListener sniperListener) {
+        this.sniperListener = sniperListener;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class SwingThreadSniperListener implements SniperListener {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                snipers.sniperStateChanged(sniperSnapshot);
+                sniperListener.sniperStateChanged(sniperSnapshot);
             }
         });
     }

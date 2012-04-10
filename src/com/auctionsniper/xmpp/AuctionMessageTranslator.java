@@ -1,4 +1,4 @@
-package com.auctionsniper.message;
+package com.auctionsniper.xmpp;
 
 import com.auctionsniper.auction.AuctionEventListener;
 import org.jivesoftware.smack.Chat;
