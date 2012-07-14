@@ -2,6 +2,7 @@ package com.auctionsniper.sniper;
 
 import com.auctionsniper.auction.Auction;
 import com.auctionsniper.auction.AuctionEventListener;
+import com.auctionsniper.Item;
 import com.auctionsniper.util.Announcer;
 
 /**
@@ -17,9 +18,9 @@ public class AuctionSniper implements AuctionEventListener {
     private SniperSnapshot snapshot;
     private Announcer<SniperListener> sniperListeners = Announcer.to(SniperListener.class);
 
-    public AuctionSniper(String itemId, Auction auction) {
+    public AuctionSniper(Item item, Auction auction) {
         this.auction = auction;
-        this.snapshot = SniperSnapshot.joining(itemId);
+        this.snapshot = SniperSnapshot.joining(item.identifier);
     }
 
     public void addSniperListener(SniperListener sniperListener) {

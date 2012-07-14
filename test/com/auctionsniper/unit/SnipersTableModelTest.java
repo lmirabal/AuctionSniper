@@ -3,6 +3,7 @@ package com.auctionsniper.unit;
 import com.auctionsniper.auction.Auction;
 import com.auctionsniper.sniper.AuctionSniper;
 import com.auctionsniper.sniper.SniperSnapshot;
+import com.auctionsniper.Item;
 import com.auctionsniper.ui.SnipersTableModel;
 import com.objogate.exception.Defect;
 import org.hamcrest.Matcher;
@@ -53,7 +54,7 @@ public class SnipersTableModelTest {
 
     @Test
     public void setsSniperValuesInColumns() throws Exception {
-        final AuctionSniper sniper = new AuctionSniper("item id", auction);
+        final AuctionSniper sniper = new AuctionSniper(new Item("item id", 456), auction);
         final SniperSnapshot bidding = sniper.getSnapshot().bidding(555, 666);
         context.checking(new Expectations() {
             {
@@ -76,7 +77,7 @@ public class SnipersTableModelTest {
 
         assertEquals(0, model.getRowCount());
 
-        final AuctionSniper sniper = new AuctionSniper("item123", auction);
+        final AuctionSniper sniper = new AuctionSniper(new Item("item123",456), auction);
         model.sniperAdded(sniper);
 
         assertEquals(1, model.getRowCount());
@@ -89,8 +90,8 @@ public class SnipersTableModelTest {
             ignoring(listener);
         }});
 
-        model.sniperAdded(new AuctionSniper("item 0", auction));
-        model.sniperAdded(new AuctionSniper("item 1", auction));
+        model.sniperAdded(new AuctionSniper(new Item("item 0",456), auction));
+        model.sniperAdded(new AuctionSniper(new Item("item 1",456), auction));
 
         assertThat("item 0", equalTo(model.getValueAt(0, Column.ITEM_IDENTIFIER)));
         assertThat("item 1", equalTo(model.getValueAt(1, Column.ITEM_IDENTIFIER)));
@@ -102,8 +103,8 @@ public class SnipersTableModelTest {
             ignoring(listener);
         }});
 
-        model.sniperAdded(new AuctionSniper("item 0", auction));
-        AuctionSniper sniper1 = new AuctionSniper("item 1", auction);
+        model.sniperAdded(new AuctionSniper(new Item("item 0",456), auction));
+        AuctionSniper sniper1 = new AuctionSniper(new Item("item 1",456), auction);
         model.sniperAdded(sniper1);
         SniperSnapshot snapshot = sniper1.getSnapshot().bidding(1000, 1000);
         model.sniperStateChanged(snapshot);
@@ -117,7 +118,7 @@ public class SnipersTableModelTest {
             ignoring(listener);
         }});
 
-        model.sniperAdded(new AuctionSniper("item 0", auction));
+        model.sniperAdded(new AuctionSniper(new Item("item 0",456), auction));
         model.sniperStateChanged(SniperSnapshot.joining("item 1"));
     }
 

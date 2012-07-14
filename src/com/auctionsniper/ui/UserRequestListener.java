@@ -1,5 +1,7 @@
 package com.auctionsniper.ui;
 
+import com.auctionsniper.Item;
+
 import java.util.EventListener;
 
 /**
@@ -8,5 +10,5 @@ import java.util.EventListener;
  * Time: 1:08 PM
  */
 public interface UserRequestListener extends EventListener {
-    void joinAuction(String itemId);
+    void joinAuction(Item item);
 }

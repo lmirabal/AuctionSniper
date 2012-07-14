@@ -5,6 +5,7 @@ import com.auctionsniper.auction.AuctionHouse;
 import com.auctionsniper.sniper.AuctionSniper;
 import com.auctionsniper.sniper.SniperCollector;
 import com.auctionsniper.sniper.SniperLauncher;
+import com.auctionsniper.Item;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.jmock.*;
@@ -29,8 +30,9 @@ public class SniperLauncherTest {
     @Test
     public void addsNewSniperToCollectorAndThenJoinsAuction() throws Exception {
         final String itemId = "item 1";
+        final Item item = new Item(itemId, 456);
         context.checking(new Expectations() {{
-            allowing(auctionHouse).auctionFor(itemId);
+            allowing(auctionHouse).auctionFor(item);
             will(returnValue(auction));
 
             oneOf(auction).addAuctionEventListeners(with(sniperForItem(itemId)));
@@ -43,7 +45,7 @@ public class SniperLauncherTest {
             then(auctionState.is("joined"));
         }});
 
-        launcher.joinAuction(itemId);
+        launcher.joinAuction(item);
     }
 
     private Matcher<AuctionSniper> sniperForItem(String itemId) {

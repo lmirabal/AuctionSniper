@@ -5,6 +5,7 @@ import com.auctionsniper.sniper.AuctionSniper;
 import com.auctionsniper.sniper.SniperListener;
 import com.auctionsniper.sniper.SniperSnapshot;
 import com.auctionsniper.sniper.SniperState;
+import com.auctionsniper.Item;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.jmock.*;
@@ -30,7 +31,7 @@ public class AuctionSniperTest {
     private final Mockery context = new Mockery();
     private final Auction auction = context.mock(Auction.class);
     private final SniperListener sniperListener = context.mock(SniperListener.class);
-    private final AuctionSniper sniper = new AuctionSniper(ITEM_ID, auction);
+    private final AuctionSniper sniper = new AuctionSniper(new Item(ITEM_ID, 456), auction);
     private final States sniperState = context.states("sniper");
 
     @Before

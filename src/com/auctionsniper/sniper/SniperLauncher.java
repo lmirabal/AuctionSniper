@@ -2,6 +2,7 @@ package com.auctionsniper.sniper;
 
 import com.auctionsniper.auction.Auction;
 import com.auctionsniper.auction.AuctionHouse;
+import com.auctionsniper.Item;
 import com.auctionsniper.ui.UserRequestListener;
 
 /**
@@ -20,9 +21,9 @@ public class SniperLauncher implements UserRequestListener {
     }
 
     @Override
-    public void joinAuction(String itemId) {
-        Auction auction = auctionHouse.auctionFor(itemId);
-        final AuctionSniper sniper = new AuctionSniper(itemId, auction);
+    public void joinAuction(Item item) {
+        Auction auction = auctionHouse.auctionFor(item);
+        final AuctionSniper sniper = new AuctionSniper(item, auction);
         auction.addAuctionEventListeners(sniper);
         collector.addSniper(sniper);
         auction.join();
