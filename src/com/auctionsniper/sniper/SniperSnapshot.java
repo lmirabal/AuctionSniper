@@ -35,6 +35,10 @@ public class SniperSnapshot {
         return new SniperSnapshot(itemId, newLastPrice, lastBid, SniperState.WINNING);
     }
 
+    public SniperSnapshot losing(int price) {
+        return new SniperSnapshot(itemId, price, lastBid, SniperState.LOSING);
+    }
+
     public SniperSnapshot closed() {
         return new SniperSnapshot(itemId, lastPrice, lastBid, state.whenAuctionClosed());
     }
@@ -52,7 +56,6 @@ public class SniperSnapshot {
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
-
 
     @Override
     public String toString() {

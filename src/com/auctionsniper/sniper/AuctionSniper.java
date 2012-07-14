@@ -15,10 +15,12 @@ import com.auctionsniper.util.Announcer;
 public class AuctionSniper implements AuctionEventListener {
     //Auction the sniper is bidding to
     private Auction auction;
+    private final Item item;
     private SniperSnapshot snapshot;
     private Announcer<SniperListener> sniperListeners = Announcer.to(SniperListener.class);
 
     public AuctionSniper(Item item, Auction auction) {
+        this.item = item;
         this.auction = auction;
         this.snapshot = SniperSnapshot.joining(item.identifier);
     }
@@ -41,8 +43,12 @@ public class AuctionSniper implements AuctionEventListener {
                 break;
             case FromOtherBidder:
                 final int bid = price + increment;
+                if(item.allowsBid(bid)){
                 auction.bid(bid);
                 snapshot = snapshot.bidding(price, bid);
+                }else{
+                    snapshot = snapshot.losing(price);
+                }
                 break;
         }
         notifyChange();

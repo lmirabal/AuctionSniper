@@ -54,7 +54,7 @@ public class MainWindow extends JFrame {
 
         controls.add(label("Stop Price: "));
         final JFormattedTextField stopPriceField = new JFormattedTextField(NumberFormat.getInstance());
-        stopPriceField.setColumns(10);
+        stopPriceField.setColumns(15);
         stopPriceField.setName(NEW_ITEM_STOP_PRICE_NAME);
         controls.add(stopPriceField);
 
