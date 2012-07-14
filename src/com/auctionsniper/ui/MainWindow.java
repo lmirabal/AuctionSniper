@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.Format;
+import java.text.NumberFormat;
 
 /**
  * User: lmirabal
@@ -21,13 +23,15 @@ public class MainWindow extends JFrame {
     public static final String STATUS_JOINING = "Joining";
     public static final String STATUS_BIDDING = "Bidding";
     public static final String STATUS_WINNING = "Winning";
+    public static final String STATUS_LOSING = "Losing";
     public static final String STATUS_LOST = "Lost";
     public static final String STATUS_WON = "Won";
 
     public static final String SNIPERS_TABLE_NAME = "status";
     public static final String NEW_ITEM_ID_NAME = "itemId";
-    public static final String JOIN_BUTTON_NAME = "join";
+    public static final String NEW_ITEM_STOP_PRICE_NAME = "stopPrice";
 
+    public static final String JOIN_BUTTON_NAME = "join";
     private final Announcer<UserRequestListener> userRequests = Announcer.to(UserRequestListener.class);
 
     public MainWindow(SniperPortfolio portfolio) {
@@ -42,10 +46,17 @@ public class MainWindow extends JFrame {
     private JPanel makeControls() {
         JPanel controls = new JPanel(new FlowLayout());
 
+        controls.add(label("Item: "));
         final JTextField itemIdField = new JTextField();
         itemIdField.setColumns(25);
         itemIdField.setName(NEW_ITEM_ID_NAME);
         controls.add(itemIdField);
+
+        controls.add(label("Stop Price: "));
+        final JFormattedTextField stopPriceField = new JFormattedTextField(NumberFormat.getInstance());
+        stopPriceField.setColumns(10);
+        stopPriceField.setName(NEW_ITEM_STOP_PRICE_NAME);
+        controls.add(stopPriceField);
 
         final JButton joinActionButton = new JButton("Join Auction");
         joinActionButton.setName(JOIN_BUTTON_NAME);
@@ -58,6 +69,10 @@ public class MainWindow extends JFrame {
         controls.add(joinActionButton);
 
         return controls;
+    }
+
+    private JLabel label(String item) {
+        return new JLabel(item);
     }
 
     private void setContentPane(JTable snipersTable, JPanel controls) {

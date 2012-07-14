@@ -20,19 +20,24 @@ public class ApplicationRunner {
 //    public static final String XMPP_HOSTNAME = "lmirabal-lnx";
 
     private AuctionSniperDriver driver;
-    public static final String SNIPER_XMPP_ID = SNIPER_ID + "@lmirabal-lnx/Auction";
+    public static final String SNIPER_XMPP_ID = SNIPER_ID + "@localhost.localdomain/Auction";
+
+    public void startBiddingWithStopPrice(FakeAuctionServer auction, int stopPrice) {
+        startSniper();
+        openBiddingFor(auction, stopPrice);
+    }
 
     public void startBiddingIn(final FakeAuctionServer... auctions) {
         startSniper();
-
-        driver = new AuctionSniperDriver(1000);
-        driver.hasTitle(MainWindow.MAIN_WINDOW_TITLE);
-        driver.hasColumnTitles();
         for (FakeAuctionServer auction : auctions) {
-            final String itemId = auction.getItemId();
-            driver.startBiddingFor(itemId);
-            driver.showsSniperStatus(itemId, 0, 0, textFor(SniperState.JOINING));
+            openBiddingFor(auction, Integer.MAX_VALUE);
         }
+    }
+
+    private void openBiddingFor(FakeAuctionServer auction, int stopPrice) {
+        final String itemId = auction.getItemId();
+        driver.startBiddingFor(itemId, stopPrice);
+        driver.showsSniperStatus(itemId, 0, 0, textFor(SniperState.JOINING));
     }
 
     private void startSniper() {
@@ -48,6 +53,10 @@ public class ApplicationRunner {
         };
         thread.setDaemon(true);
         thread.start();
+
+        driver = new AuctionSniperDriver(1000);
+        driver.hasTitle(MainWindow.MAIN_WINDOW_TITLE);
+        driver.hasColumnTitles();
     }
 
     private String[] arguments() {
@@ -64,6 +73,10 @@ public class ApplicationRunner {
 
     public void hasShownSniperIsWinning(FakeAuctionServer auction, int winningBid) {
         driver.showsSniperStatus(auction.getItemId(), winningBid, winningBid, textFor(SniperState.WINNING));
+    }
+
+    public void hasShownSniperIsLosing(FakeAuctionServer auction, int winningPrice, int lastPrice) {
+        driver.showsSniperStatus(auction.getItemId(), winningPrice, lastPrice, textFor(SniperState.LOSING));
     }
 
     public void showsSniperHasLostAuction(FakeAuctionServer auction, int winningPrice, int lastBid) {

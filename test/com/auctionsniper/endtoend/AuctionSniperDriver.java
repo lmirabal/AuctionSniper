@@ -40,26 +40,30 @@ public class AuctionSniperDriver extends JFrameDriver {
                 withLabelText("Last Bid"), withLabelText("State")));
     }
 
-    public void startBiddingFor(String itemId) {
-        final JTextFieldDriver fieldDriver = itemIdField();
-        fieldDriver.focusWithMouse();
-        fieldDriver.selectAll();
-        fieldDriver.deleteSelectedText();
-        fieldDriver.focusWithMouse();
-        fieldDriver.typeText(itemId);
+    public void startBiddingFor(String itemId, int stopPrice) {
+        replaceAllText(textField(MainWindow.NEW_ITEM_ID_NAME), itemId);
+        replaceAllText(textField(MainWindow.NEW_ITEM_STOP_PRICE_NAME), String.valueOf(stopPrice));
         //replaceAllText is not working for all tests
 //        itemIdField().typeText(itemId);
 //        itemIdField().replaceAllText(itemId);
         bidButton().click();
     }
 
-    private JButtonDriver bidButton() {
-        return new JButtonDriver(this, JButton.class, named(MainWindow.JOIN_BUTTON_NAME));
+    private void replaceAllText(JTextFieldDriver fieldDriver, String itemId) {
+        fieldDriver.focusWithMouse();
+        fieldDriver.selectAll();
+        fieldDriver.deleteSelectedText();
+        fieldDriver.focusWithMouse();
+        fieldDriver.typeText(itemId);
     }
 
-    private JTextFieldDriver itemIdField() {
-        final JTextFieldDriver newItemId = new JTextFieldDriver(this, JTextField.class, named(MainWindow.NEW_ITEM_ID_NAME));
+    private JTextFieldDriver textField(String name) {
+        final JTextFieldDriver newItemId = new JTextFieldDriver(this, JTextField.class, named(name));
         newItemId.focusWithMouse();
         return newItemId;
+    }
+
+    private JButtonDriver bidButton() {
+        return new JButtonDriver(this, JButton.class, named(MainWindow.JOIN_BUTTON_NAME));
     }
 }
