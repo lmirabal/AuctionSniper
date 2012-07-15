@@ -10,11 +10,14 @@ import java.util.EventListener;
  * Notifies Auction events (close, price)
  */
 public interface AuctionEventListener extends EventListener {
-    enum PriceSource {
-        FromSniper, FromOtherBidder
-    }
 
+
+    enum PriceSource {
+        FromSniper, FromOtherBidder;
+    }
     public void auctionClosed();
 
     public void currentPrice(int price, int increment, PriceSource priceSource);
+
+    void auctionFailed();
 }
