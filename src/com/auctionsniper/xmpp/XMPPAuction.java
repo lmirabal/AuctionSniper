@@ -23,14 +23,14 @@ public class XMPPAuction implements Auction {
     private final Announcer<AuctionEventListener> auctionEventListeners = Announcer.to(AuctionEventListener.class);
 
 
-    public XMPPAuction(XMPPConnection connection, String userJID) {
-        final AuctionMessageTranslator translator = translateFor(connection);
+    public XMPPAuction(XMPPConnection connection, String userJID, LoggingXMPPFailureReporter failureReporter) {
+        final AuctionMessageTranslator translator = translateFor(connection, failureReporter);
         chat = connection.getChatManager().createChat(userJID, translator);
         addAuctionEventListeners(chatDisconnectorFor(translator));
     }
 
-    private AuctionMessageTranslator translateFor(XMPPConnection connection) {
-        return new AuctionMessageTranslator(connection.getUser(), auctionEventListeners.announce());
+    private AuctionMessageTranslator translateFor(XMPPConnection connection, LoggingXMPPFailureReporter failureReporter) {
+        return new AuctionMessageTranslator(connection.getUser(), auctionEventListeners.announce(), failureReporter);
     }
 
     private AuctionEventListener chatDisconnectorFor(final AuctionMessageTranslator translator) {

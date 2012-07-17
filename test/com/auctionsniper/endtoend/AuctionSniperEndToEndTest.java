@@ -121,7 +121,7 @@ public class AuctionSniperEndToEndTest {
         auction.reportPrice(520, 21, "other bidder");
         waitForAnotherAuctionEvent();
 
-        application.reportsInvalidMessage(auction, brokenMessage); //TODO
+        application.reportsInvalidMessage(auction, brokenMessage);
         application.showsSniperHasFailed(auction);
     }
 
