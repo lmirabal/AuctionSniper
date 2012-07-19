@@ -112,6 +112,51 @@ public class AuctionMessageTranslatorTest {
         translator.processMessage(UNUSED_CHAT, message);
     }
 
+    @Test
+    public void doesNotNotifyFailureWhenVersionIsPresentAndIsCurrent() throws Exception {
+        context.checking(new Expectations(){{
+            allowing(listener).auctionClosed();
+            never(listener).auctionFailed();
+        }});
+
+        Message message = new Message();
+        message.setBody("SOL Version: 1.1; Event: CLOSE;");
+        translator.processMessage(UNUSED_CHAT, message);
+    }
+
+    @Test
+    public void notifiesFailureWhenVersionIsPresentButIsNotCurrent() throws Exception {
+        final String badMessage = String.format("SOL Version: 1.2;Event: PRICE; CurrentPrice: 10; Increment: 5; Bidder: %s;",
+                SNIPER_ID);
+        expectFailureWithMessage(badMessage);
+
+        Message message = new Message();
+        message.setBody(badMessage);
+        translator.processMessage(UNUSED_CHAT, message);
+    }
+
+    @Test
+    public void notifiesAuctionFailedWhenVersionIsMissing() throws Exception {
+        final String badMessage = String.format("Event: PRICE; CurrentPrice: 10; Increment: 5; Bidder: %s;",
+                SNIPER_ID);
+        expectFailureWithMessage(badMessage);
+
+        Message message = new Message();
+        message.setBody(badMessage);
+        translator.processMessage(UNUSED_CHAT, message);
+    }
+
+    @Test
+    public void notifiesAuctionFailedWhenVersionIsEmpty() throws Exception {
+        final String badMessage = String.format("SOL Version: ;Event: PRICE; CurrentPrice: 10; Increment: 5; Bidder: %s;",
+                SNIPER_ID);
+        expectFailureWithMessage(badMessage);
+
+        Message message = new Message();
+        message.setBody(badMessage);
+        translator.processMessage(UNUSED_CHAT, message);
+    }
+
     private void expectFailureWithMessage(final String badMessage) {
         context.checking(new Expectations() {{
             oneOf(listener).auctionFailed();

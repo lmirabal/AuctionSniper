@@ -51,19 +51,27 @@ public class AuctionMessageTranslator implements MessageListener {
     }
 
     private static class AuctionEvent {
+        public static final String CURRENT_VERSION = "1.1";
         private final HashMap<String, String> fields = new HashMap<String, String>();
 
-        public static AuctionEvent from(String messageBody) {
+        public static AuctionEvent from(String messageBody) throws MissingValueException {
             return new AuctionEvent(messageBody);
         }
 
-        private AuctionEvent(String messageBody) {
+        private AuctionEvent(String messageBody) throws MissingValueException {
             parse(messageBody);
         }
 
-        private void parse(String messageBody) {
+        private void parse(String messageBody) throws MissingValueException {
             for (String element : fieldsIn(messageBody)) {
                 addField(element);
+            }
+            validateVersion();
+        }
+
+        private void validateVersion() throws MissingValueException {
+            if(!CURRENT_VERSION.equals(get("SOL Version"))){
+                throw new MissingValueException("SOL Version");
             }
         }
 
